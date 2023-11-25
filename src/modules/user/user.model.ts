@@ -69,6 +69,7 @@ userSchema.pre('findOne', function (next) {
 });
 
 //creating a custom static method
+
 userSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await UserModel.findOne({ id });
   return existingUser;

@@ -63,23 +63,18 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
-
-    const result = await UserServices.getUpdateUserFromDB(userId);
-
-    // Omitting password field from the response
-    // const { password, ...responseData } = updatedUser.toObject();
-
+    const userData = req.body;
+    const id = req.params.id;
+    const result = await UserServices.getUpdateUserFromDB(id, userData);
     res.status(200).json({
-      success: true,
-      message: 'User updated successfully!',
+      status: 'success',
+      message: 'User updated successfully',
       data: result,
     });
   } catch (err: any) {
     res.status(500).json({
-      success: false,
-      message: 'Failed to update user information.',
-      error: err.message,
+      status: false,
+      message: err.message || 'Something went wrong',
     });
   }
 };

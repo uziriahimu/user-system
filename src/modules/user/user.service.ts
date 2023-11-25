@@ -16,8 +16,14 @@ const getSingleUserFromDB = async (userId: string) => {
   return result;
 };
 
-const getUpdateUserFromDB = async (userId: string) => {
-  const result = await UserModel.updateOne({ userId }, { isDeleted: true });
+const getUpdateUserFromDB = async (
+  id: string,
+  userData: User,
+): Promise<User | null> => {
+  const result = await UserModel.findByIdAndUpdate(id, userData, {
+    new: true,
+    runValidators: true,
+  });
 
   return result;
 };
