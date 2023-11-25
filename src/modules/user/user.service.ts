@@ -16,17 +16,11 @@ const getSingleUserFromDB = async (userId: string) => {
   return result;
 };
 
-// const getUpdateUserFromDB = async (userId: string, updatedData: any) => {
-//   try {
-//     const result = await UserModel.findOneAndUpdate({ userId }, updatedData, {
-//       new: true,
-//     });
+const getUpdateUserFromDB = async (userId: string) => {
+  const result = await UserModel.updateOne({ userId }, { isDeleted: true });
 
-//     return result;
-//   } catch (error) {
-//     throw new Error('Failed to update user information.');
-//   }
-// };
+  return result;
+};
 
 const deleteUserFromDB = async (userId: string) => {
   const result = await UserModel.updateOne({ userId }, { isDeleted: true });
@@ -37,6 +31,6 @@ export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
-  // getUpdateUserFromDB,
+  getUpdateUserFromDB,
   deleteUserFromDB,
 };

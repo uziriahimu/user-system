@@ -68,13 +68,6 @@ userSchema.pre('findOne', function (next) {
   next();
 });
 
-// [ {$match: { isDeleted : {  $ne: : true}}}   ,{ '$match': { id: '123456' } } ]
-
-userSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
-
 //creating a custom static method
 userSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await UserModel.findOne({ id });

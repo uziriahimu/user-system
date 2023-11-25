@@ -61,39 +61,29 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-// const updateUser = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.params;
-//     const userDataToUpdate = req.body; // Updated user data
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
 
-//     const updatedUser = await UserServices.getUpdateUserFromDB(
-//       userId,
-//       userDataToUpdate,
-//     );
+    const result = await UserServices.getUpdateUserFromDB(userId);
 
-//     if (!updatedUser) {
-//       return res.status(404).json({
-//         success: false,
-//         message: 'User not found. Cannot update information.',
-//       });
-//     }
+    // Omitting password field from the response
+    // const { password, ...responseData } = updatedUser.toObject();
 
-//     // Omitting password field from the response
-//     // const { password, ...responseData } = updatedUser.toObject();
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user information.',
+      error: err.message,
+    });
+  }
+};
 
-//     res.status(200).json({
-//       success: true,
-//       message: 'User updated successfully!',
-//       data: userDataToUpdate,
-//     });
-//   } catch (err: any) {
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to update user information.',
-//       error: err.message,
-//     });
-//   }
-// };
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -118,6 +108,6 @@ export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
-  // updateUser,
+  updateUser,
   deleteUser,
 };
