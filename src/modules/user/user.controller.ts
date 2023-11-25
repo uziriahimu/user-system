@@ -11,8 +11,12 @@ const createUser = async (req: Request, res: Response) => {
       message: 'user is created succesfully',
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'something went wrong',
+      error: err,
+    });
   }
 };
 
@@ -25,8 +29,12 @@ const getAllUsers = async (req: Request, res: Response) => {
       message: 'Students are retrieved succesfully',
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'something went wrong',
+      error: err,
+    });
   }
 };
 
@@ -41,8 +49,12 @@ const getSingleUser = async (req: Request, res: Response) => {
       message: 'User is retrieved succesfully',
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'something went wrong',
+      error: err,
+    });
   }
 };
 
