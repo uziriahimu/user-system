@@ -38,12 +38,10 @@ const userSchema = new Schema<User>({
   //   orders: [orderSchema],
 });
 
-// pre save middleware/ hook : will work on create()  save()
+// pre save middleware
 userSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook : we will save  data');
   // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this; // doc
-  // hashing password and save into DB
+  const user = this;
   user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds),
@@ -51,12 +49,36 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// post save middleware / hook
+// post save middleware
 userSchema.set('toJSON', {
   transform: function (doc, next) {
     delete next.password; // Remove the password field from the serialized document
     return next;
   },
 });
+
+// Query Middleware
+userSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// [ {$match: { isDeleted : {  $ne: : true}}}   ,{ '$match': { id: '123456' } } ]
+
+userSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+
+//creating a custom static method
+userSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await UserModel.findOne({ id });
+  return existingUser;
+};
 
 export const UserModel = model<User>('User', userSchema);
