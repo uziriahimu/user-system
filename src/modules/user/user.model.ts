@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
 import { Address, Fullname, User } from './user.interface';
+import config from '../../app/config';
 
 const fullnameSchema = new Schema<Fullname>({
   firstName: {
@@ -34,6 +36,27 @@ const userSchema = new Schema<User>({
   hobbies: [{ type: String }],
   address: { type: addressSchema, required: true },
   //   orders: [orderSchema],
+});
+
+// pre save middleware/ hook : will work on create()  save()
+userSchema.pre('save', async function (next) {
+  // console.log(this, 'pre hook : we will save  data');
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; // doc
+  // hashing password and save into DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+// post save middleware / hook
+userSchema.set('toJSON', {
+  transform: function (doc, next) {
+    delete next.password; // Remove the password field from the serialized document
+    return next;
+  },
 });
 
 export const UserModel = model<User>('User', userSchema);
