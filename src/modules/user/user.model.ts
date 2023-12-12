@@ -15,28 +15,21 @@ const fullnameSchema = new Schema<Fullname>({
   },
 });
 const addressSchema = new Schema<Address>({
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
+  street: { type: String },
+  city: { type: String },
+  country: { type: String },
 });
-
-// const orderSchema = new Schema<Orders>({
-//   productName: { type: String, required: true },
-//   price: { type: Number, required: true },
-//   quantity: { type: Number, required: true },
-// });
 
 const userSchema = new Schema<TUser>({
   userId: { type: Number, required: true },
   username: { type: String, required: true },
   password: { type: String, required: true },
   fullName: { type: fullnameSchema, required: true },
-  age: { type: Number, required: true },
+  age: { type: Number },
   email: { type: String, required: true },
-  isActive: { type: Boolean, required: true },
+  isActive: { type: Boolean },
   hobbies: [{ type: String }],
-  address: { type: addressSchema, required: true },
-  //   orders: [orderSchema],
+  address: { type: addressSchema },
 });
 
 // pre save middleware
