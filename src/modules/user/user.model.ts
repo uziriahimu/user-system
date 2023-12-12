@@ -1,12 +1,13 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { Address, Fullname, User } from './user.interface';
+import { Address, Fullname, TUser, UserModel } from './user.interface';
 import config from '../../app/config';
 
 const fullnameSchema = new Schema<Fullname>({
   firstName: {
     type: String,
     required: true,
+    unique: true,
   },
   lastName: {
     type: String,
@@ -25,7 +26,7 @@ const addressSchema = new Schema<Address>({
 //   quantity: { type: Number, required: true },
 // });
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<TUser>({
   userId: { type: Number, required: true },
   username: { type: String, required: true },
   password: { type: String, required: true },
@@ -57,22 +58,9 @@ userSchema.set('toJSON', {
   },
 });
 
-// Query Middleware
-userSchema.pre('find', function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
-
-userSchema.pre('findOne', function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
-
-//creating a custom static method
-
 userSchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await UserModel.findOne({ id });
+  const existingUser = await User.findOne({ id });
   return existingUser;
 };
 
-export const UserModel = model<User>('User', userSchema);
+export const User = model<TUser, UserModel>('User', userSchema);
