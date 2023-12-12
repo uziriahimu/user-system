@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
 import userValidation from './user.validation';
-import { User } from './user.model';
 // import { UserModel } from './user.model';
 
 const createUser = async (req: Request, res: Response) => {
@@ -46,9 +45,9 @@ const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
 
-    const user = await User.findOne({ userId }, { password: 0 }); // Excluding the password field
+    const result = await UserServices.getSingleUserFromDB(userId);
 
-    if (!user) {
+    if (!result) {
       return res.status(404).json({
         success: false,
         message: 'User not found',
@@ -61,8 +60,8 @@ const getSingleUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'User found successfully',
-      data: user,
+      message: 'User is fetched  succesfully',
+      data: result,
     });
   } catch (err: any) {
     res.status(500).json({
@@ -73,48 +72,69 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-// const updateUser = async (req: Request, res: Response) => {
-//   try {
-//     const userData = req.body;
-//     const id = req.params.id;
-//     const result = await UserServices.getUpdateUserFromDB(id, userData);
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'User updated successfully',
-//       data: result,
-//     });
-//   } catch (err: any) {
-//     res.status(500).json({
-//       status: false,
-//       message: err.message || 'Something went wrong',
-//     });
-//   }
-// };
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    const userId = req.params.userId;
+    const result = await UserServices.getUpdateUserFromDB(userId, userData);
 
-// const deleteUser = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.params;
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    res.status(200).json({
+      status: 'success',
+      message: 'User updated successfully',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      status: false,
+      message: err.message || 'Something went wrong',
+    });
+  }
+};
 
-//     const result = await UserServices.deleteUserFromDB(userId);
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
 
-//     res.status(200).json({
-//       success: true,
-//       message: 'Student is deleted succesfully',
-//       data: result,
-//     });
-//   } catch (err: any) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message || 'something went wrong',
-//       error: err,
-//     });
-//   }
-// };
+    const result = await UserServices.deleteUserFromDB(userId);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'User  deleted succesfully',
+      data: null,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'something went wrong',
+      error: err,
+    });
+  }
+};
 
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
-  // updateUser,
-  // deleteUser,
+  updateUser,
+  deleteUser,
 };
